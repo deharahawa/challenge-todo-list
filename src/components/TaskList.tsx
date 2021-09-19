@@ -1,5 +1,4 @@
 import { useState } from 'react'
-
 import '../styles/tasklist.scss'
 
 import { FiTrash, FiCheckSquare } from 'react-icons/fi'
@@ -14,16 +13,52 @@ export function TaskList() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [newTaskTitle, setNewTaskTitle] = useState('');
 
+  function generateRandomId() {
+    const min = Math.ceil(80938402)
+    const max = Math.ceil(9238472893)
+    return Math.floor(Math.random() * (max - min)) + min
+  }
+
   function handleCreateNewTask() {
     // Crie uma nova task com um id random, não permita criar caso o título seja vazio.
+    if (newTaskTitle == '') {
+      console.error('cant create task with empty value')
+      return
+    }
+    let newTask: Task = {
+      id: generateRandomId(),
+      title: newTaskTitle,
+      isComplete: false,
+    };
+    let newTasksArray = [...tasks, newTask];
+    setTasks(newTasksArray);
+    setNewTaskTitle('');
   }
 
   function handleToggleTaskCompletion(id: number) {
     // Altere entre `true` ou `false` o campo `isComplete` de uma task com dado ID
+    tasks.map(task => {
+      if (task.id === id) {
+        let tasksCopy = [...tasks];
+        let updateTask: Task = {
+          ...task,
+          isComplete: !task.isComplete
+        };
+        tasksCopy.splice(tasks.indexOf(task), 1, updateTask);
+        setTasks(tasksCopy);
+      }
+    })
   }
 
   function handleRemoveTask(id: number) {
     // Remova uma task da listagem pelo ID
+    tasks.map(task => {
+      if (task.id === id) {
+        let tasksCopy = [...tasks];
+        tasksCopy.splice(tasks.indexOf(task), 1);
+        setTasks(tasksCopy);
+      }
+    })
   }
 
   return (
